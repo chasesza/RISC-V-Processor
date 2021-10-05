@@ -35,7 +35,7 @@ entity comparator_n_bit is
     Generic (n: integer := 32);
     Port ( a : in STD_LOGIC_VECTOR (n-1 downto 0);
            b : in STD_LOGIC_VECTOR (n-1 downto 0);
-           s_n_u : in STD_LOGIC;
+           sign_n_unsign : in STD_LOGIC;
            g : out STD_LOGIC;
            e : out STD_LOGIC;
            l : out STD_LOGIC);
@@ -58,37 +58,48 @@ architecture RTL of comparator_n_bit is
                q : out STD_LOGIC);
     end component;
     
+    --Declare busses
     signal g_bus : STD_LOGIC_VECTOR(n-1 downto 0);
     signal e_bus : STD_LOGIC_VECTOR(n-1 downto 0);
     signal l_bus : STD_LOGIC_VECTOR(n-1 downto 0);
+    
+    signal g_not : STD_LOGIC;
+    signal l_not : STD_LOGIC;
+    
+    --Inversion bit
+    signal invert : STD_LOGIC;
 
 begin
     
     --MSB
     g_bus(n-1) <= a(n-1) AND NOT b(n-1);
     l_bus(n-1) <= NOT a(n-1) AND b(n-1);
-    e_bus(n-1) <= NOT a(n-1) AND NOT b(n-1) OR a(n-1) AND b(n-1);
-
+    e_bus(n-1) <= ((NOT a(n-1)) AND (NOT b(n-1))) OR (a(n-1) AND b(n-1));
+    
+    invert <= sign_n_unsign AND NOT e_bus(0) AND ( (NOT a(n-1) AND b(n-1)) OR (a(n-1) AND NOT b(n-1)) ) ;
+    g_not <= NOT g_bus(0);
+    l_not <= NOT l_bus(0);
+    
     gen_comp:
-    for i in 1 to n-2 generate
-        g_bus(i) <= g_bus(i+1) OR e_bus(i+1) AND a(i) AND NOT b(i);
-        l_bus(i) <= l_bus(i+1) OR e_bus(i+1) AND NOT a(i) AND b(i);
-        e_bus(i) <= e_bus(i+1) AND (a(i) AND b(i) OR NOT a(i) AND NOT b(i));
+    for i in 0 to n-2 generate
+        g_bus(i) <= g_bus(i+1) OR ((e_bus(i+1)) AND a(i) AND (NOT b(i)));
+        l_bus(i) <= l_bus(i+1) OR ((e_bus(i+1) AND (NOT a(i)) AND b(i)));
+        e_bus(i) <= e_bus(i+1) AND ((a(i) AND b(i)) OR ((NOT a(i)) AND (NOT b(i))));
     end generate;
 
     gen_mux_g: mux_2_1
     Port Map(
-        a => NOT g_bus(0),
+        a => g_not,
         b => g_bus(0),
-        sel => s_n_u AND (a(n-1) AND NOT b(n-1) OR NOT a(n-1) AND b(n-1)),
+        sel => invert,
         q => g
     );
     
     gen_mux_l: mux_2_1
         Port Map(
-            a => NOT l_bus(0),
+            a => l_not,
             b => l_bus(0),
-            sel => s_n_u AND (a(n-1) AND NOT b(n-1) OR NOT a(n-1) AND b(n-1)),
+            sel => invert,
             q => l
         );
         
