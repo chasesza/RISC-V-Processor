@@ -25,12 +25,12 @@ module adder_32_bit_testbench();
     reg [63:0] a;
     reg [63:0] b;
     reg [63:0] q;
-    reg add_one;
+    reg sub;
     
     adder_n_bit #(64) add_32(
         .a(a),
         .b(b),
-        .add_one(add_one),
+        .sub(sub),
         .q(q)
     );
     
@@ -38,11 +38,11 @@ module adder_32_bit_testbench();
     begin
         a = 64'b0;
         b=64'b0;
-        add_one = 1'b0;
+        sub = 1'b0;
     end
     
     always #1 a = a+1;
     always #2 b = b+1;
-    always #10 add_one = ~add_one;
+    always #10 sub = ~sub;
     
 endmodule

@@ -35,13 +35,14 @@ entity adder_n_bit is
     Generic (n: integer := 32);
     Port ( a : in STD_LOGIC_VECTOR (n-1 downto 0);
            b : in STD_LOGIC_VECTOR (n-1 downto 0);
-           add_one : in STD_LOGIC;
+           sub : in STD_LOGIC;
            q : out STD_LOGIC_VECTOR (n-1 downto 0));
 end adder_n_bit;
 
 architecture RTL of adder_n_bit is
 
     signal c : STD_LOGIC_VECTOR (n-1 downto 0);
+    signal b_xor_sub : STD_LOGIC_VECTOR (n-1 downto 0);
     
     component full_adder_1_bit is
             Port(
@@ -55,17 +56,22 @@ begin
     fa0: full_adder_1_bit 
     PORT MAP(
         a => a(0),
-        b => b(0),
-        cin => add_one,
+        b => b_xor_sub(0),
+        cin => sub,
         q => q(0),
         cout => c(0));
+    
+    gen_xor_for_sub:
+        for i in 0 to n-1 generate
+            b_xor_sub(i) <= b(i) XOR sub;
+        end generate;
     
     gen_fa:
         for i in 1 to n-1 generate
             fa: full_adder_1_bit
             PORT MAP(
                 a=>a(i),
-                b=>b(i),
+                b=>b_xor_sub(i),
                 cin=>c(i-1),
                 q=>q(i),
                 cout=>c(i));
