@@ -137,6 +137,7 @@ begin
                 --r2                                               --LUI AUIPC                           --Sign extend
     end generate; 
 
+    gen_b_19_12:
     for j in 19 to 12 generate
         b(j) <= (r2(j) AND b_eq_rs2) OR (i(j) AND i(4) AND NOT i(3) AND i(2)) OR i(2) AND i(3) AND i(j) OR i(31) AND NOT b_eq_rs2;
             --r2                                               --LUI AUIPC                                   --JAL                        --Sign extend
