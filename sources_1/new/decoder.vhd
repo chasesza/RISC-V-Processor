@@ -47,6 +47,7 @@ entity decoder is
            fne : out STD_LOGIC;
            fg : out STD_LOGIC;
            fl : out STD_LOGIC;
+           comp_signed: out STD_LOGIC;
            fand : out STD_LOGIC;
            f_or : out STD_LOGIC;
            fxor : out STD_LOGIC);
@@ -66,9 +67,13 @@ architecture RTL of decoder is
     signal jal  : STD_LOGIC;
 
 
-    signal comp : STD_LOGIC;
+    signal comp_b : STD_LOGIC;
+    signal comp_ir : STD_LOGIC;
+
+    signal jalr : STD_LOGIC;
 begin
     
+    --ALU input a
     a_rs <= NOT i(2);
     a_pc <= i(2) AND (NOT ((NOT i(6)) AND i(5)));
 
@@ -77,6 +82,7 @@ begin
         a(j) <= a_rs AND r1(j) OR a_pc AND pc(j);
     end generate; 
 
+    --ALU input b
     b_rs <= i(5) AND (NOT i(2)) AND (i(6) OR i(4));
     imm_i <= (NOT b_rs) AND (NOT i(6)) AND (NOT i(5)); --all I-type except for JALR
     imm_s <= (NOT b_rs) AND (NOT i(6)) AND i(5) AND (NOT i(4));
@@ -105,17 +111,41 @@ begin
         b(j) <= (b_rs AND r2(j)) OR (i(j+20) AND imm_i) OR (i(j+7) AND imm_s);
     end generate;
 
-
-
-    --function
+    --ALU function
     fadd <= i(2) OR (i(4) AND (NOT i(14)) AND (NOT i(13)) AND (NOT i(12))) OR ((NOT i(6)) AND (NOT i(4)));
       --LUI/AUIPC/JAL(R)   --ADD(I)/SUB                                            --Load/Store
     sub_bit <= b_rs AND i(30);
     fsr <= i(4) AND (NOT i(2)) AND i(14) AND (NOT i(13)) AND i(12); --shift right
     arith_bit <= i(30); --arithmetic shift
     fsl <= i(4) AND (NOT i(2)) AND (NOT i(14)) AND (NOT i(13)) AND i(12); --shift left
-    comp <= i(6) AND i(5) AND (NOT i(2)); --comparator
-    fe <= comp AND (NOT i(14)) AND (NOT i(12)); --equal
-    fne <= comp AND (NOT i(14)) AND i(12); --not equal
-    
+    comp_b <= i(6) AND i(5) AND (NOT i(2)); --comparator branch instructions
+    comp_ir <= i(4) AND (NOT i(2)) AND (NOT i(14)) AND i(13); --comparater register and immediate instructions - (only less than)
+    fe <= comp_b AND (NOT i(14)) AND (NOT i(12)); --equal
+    fne <= comp_b AND (NOT i(14)) AND i(12); --not equal
+    fg <= comp_b AND i(14) AND i(12); --greater than or equal to
+    fl <= (comp_b AND i(14) AND (NOT i(12))) OR comp_ir; --less than
+    comp_signed <= NOT ((comp_b AND i(13)) OR (comp_ir AND i(12))); --signed greater than/less than comparison
+    fand <= i(4) AND (NOT i(2)) AND i(14) AND i(13) AND i(12); --and
+    f_or <= i(4) AND (NOT i(2)) AND i(14) AND i(13) AND (NOT i(12)); --or
+    fxor <= i(4) AND (NOT i(2)) AND i(14) AND (NOT i(13)) AND (NOT i(12)); --xor
+
+    --PC adder inputs
+    jalr <= (NOT i(4)) AND (NOT i(3)) AND i(2);
+    gen_pc_x:
+    for j in 31 to 0 generate
+        x_pc(j) <= (jalr AND r1(j)) OR ((NOT jalr) and pc(j));
+    end generate;
+
+    gen_pc_y_31_20:
+    for j in 31 to 20 generate
+        y_pc(j) <= i(31) AND (jalr OR imm_b OR imm_j);
+    end generate;
+
+    gen_pc_y_19_13:
+    for j in 19 to 12 generate
+        y_pc(j) <= (i(31) AND (jalr OR imm_b)) OR (imm_j AND i(j));
+    end generate;
+
+    y_pc(11) <= (i(31) AND jalr) OR (imm_b AND i(7)) OR (imm_j AND i(20));
+
 end RTL;
