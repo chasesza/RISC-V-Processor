@@ -39,9 +39,9 @@ entity decoder is
            x_pc : out STD_LOGIC_VECTOR (31 downto 0);
            y_pc : out STD_LOGIC_VECTOR (31 downto 0);
            fadd : out STD_LOGIC;
-           fsub : out STD_LOGIC;
+           sub_bit : out STD_LOGIC;
            fsr : out STD_LOGIC;
-           fsrarith : out STD_LOGIC;
+           arith_bit : out STD_LOGIC;
            fsl : out STD_LOGIC;
            fe : out STD_LOGIC;
            fne : out STD_LOGIC;
@@ -65,18 +65,57 @@ architecture RTL of decoder is
     signal imm_j : STD_LOGIC;
     signal jal  : STD_LOGIC;
 
+
+    signal comp : STD_LOGIC;
 begin
     
     a_rs <= NOT i(2);
     a_pc <= i(2) AND (NOT ((NOT i(6)) AND i(5)));
-    
+
+    gen_alu_a: 
+    for j in 0 to 31 generate
+        a(j) <= a_rs AND r1(j) OR a_pc AND pc(j);
+    end generate; 
+
     b_rs <= i(5) AND (NOT i(2)) AND (i(6) OR i(4));
-    imm_i <= (NOT b_rs) AND (NOT i(6)) AND (NOT i(5));
+    imm_i <= (NOT b_rs) AND (NOT i(6)) AND (NOT i(5)); --all I-type except for JALR
     imm_s <= (NOT b_rs) AND (NOT i(6)) AND i(5) AND (NOT i(4));
     imm_b <= i(6) AND i(5) AND (NOT i(2));
     imm_u <= (NOT b_rs) AND i(4) AND (NOT i(3)) AND i(2);
     imm_j <= (NOT b_rs) AND i(2) AND i(5) AND i(3);
-    jal <= (NOT b_rs) AND i(3) AND i(2);
-    
+    jal <= i(3) AND i(2);
 
+    gen_alu_b_31_12:
+    for j in 31 to 12 generate
+        b(j) <= (b_rs AND r2(j)) OR (i(j) AND imm_u) OR (i(31) AND (imm_i OR imm_s));
+    end generate;
+
+    gen_alu_b_11_5:
+    for j in 11 to 5 generate
+        b(j) <= (b_rs AND r2(j)) OR i(j+20) AND (imm_i OR imm_s);
+    end generate;
+    
+    b(4) <= (b_rs AND r2(j)) OR (i(4+20) AND imm_i) OR (i(4+7) AND imm_s);
+
+    b(3) <= (b_rs AND r2(j)) OR (i(3+20) AND imm_i) OR (i(3+7) AND imm_s) OR (i(6) AND i(2));
+                                                                        --for pc+4 in jal/jalr
+
+    gen_alu_b_2_0:
+    for j in 2 to 0 generate
+        b(j) <= (b_rs AND r2(j)) OR (i(j+20) AND imm_i) OR (i(j+7) AND imm_s);
+    end generate;
+
+
+
+    --function
+    fadd <= i(2) OR (i(4) AND (NOT i(14)) AND (NOT i(13)) AND (NOT i(12))) OR ((NOT i(6)) AND (NOT i(4)));
+      --LUI/AUIPC/JAL(R)   --ADD(I)/SUB                                            --Load/Store
+    sub_bit <= b_rs AND i(30);
+    fsr <= i(4) AND (NOT i(2)) AND i(14) AND (NOT i(13)) AND i(12); --shift right
+    arith_bit <= i(30); --arithmetic shift
+    fsl <= i(4) AND (NOT i(2)) AND (NOT i(14)) AND (NOT i(13)) AND i(12); --shift left
+    comp <= i(6) AND i(5) AND (NOT i(2)); --comparator
+    fe <= comp AND (NOT i(14)) AND (NOT i(12)); --equal
+    fne <= comp AND (NOT i(14)) AND i(12); --not equal
+    
 end RTL;
