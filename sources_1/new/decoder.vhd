@@ -36,16 +36,17 @@ entity decoder is
            pc : in STD_LOGIC_VECTOR (31 downto 0);
            a : out STD_LOGIC_VECTOR (31 downto 0);
            b : out STD_LOGIC_VECTOR (31 downto 0);
-           x_pc : out STD_LOGIC_VECTOR (31 downto 0);
-           y_pc : out STD_LOGIC_VECTOR (31 downto 0);
+           x_pc : out STD_LOGIC_VECTOR (31 downto 0); --pc input x
+           y_pc : out STD_LOGIC_VECTOR (31 downto 0); --alternate pc input y (default is 4)
            fadd : out STD_LOGIC;
            sub_bit : out STD_LOGIC;
            fsr : out STD_LOGIC;
            arith_bit : out STD_LOGIC;
            fsl : out STD_LOGIC;
-           fe : out STD_LOGIC;
-           fne : out STD_LOGIC;
-           fg : out STD_LOGIC;
+           be : out STD_LOGIC;
+           bne : out STD_LOGIC;
+           bl : out STD_LOGIC;
+           bg : out STD_LOGIC;
            fl : out STD_LOGIC;
            comp_signed: out STD_LOGIC;
            fand : out STD_LOGIC;
@@ -119,11 +120,11 @@ begin
     arith_bit <= i(30); --arithmetic shift
     fsl <= i(4) AND (NOT i(2)) AND (NOT i(14)) AND (NOT i(13)) AND i(12); --shift left
     comp_b <= i(6) AND i(5) AND (NOT i(2)); --comparator branch instructions
-    comp_ir <= i(4) AND (NOT i(2)) AND (NOT i(14)) AND i(13); --comparater register and immediate instructions - (only less than)
-    fe <= comp_b AND (NOT i(14)) AND (NOT i(12)); --equal
-    fne <= comp_b AND (NOT i(14)) AND i(12); --not equal
-    fg <= comp_b AND i(14) AND i(12); --greater than or equal to
-    fl <= (comp_b AND i(14) AND (NOT i(12))) OR comp_ir; --less than
+    fl <= i(4) AND (NOT i(2)) AND (NOT i(14)) AND i(13); --comparator register and immediate instructions - (only less than)
+    be <= comp_b AND (NOT i(14)) AND (NOT i(12)); --equal
+    bne <= comp_b AND (NOT i(14)) AND i(12); --not equal
+    bg <= comp_b AND i(14) AND i(12); --greater than or equal to
+    bl <= comp_b AND i(14) AND (NOT i(12)));
     comp_signed <= NOT ((comp_b AND i(13)) OR (comp_ir AND i(12))); --signed greater than/less than comparison
     fand <= i(4) AND (NOT i(2)) AND i(14) AND i(13) AND i(12); --and
     f_or <= i(4) AND (NOT i(2)) AND i(14) AND i(13) AND (NOT i(12)); --or

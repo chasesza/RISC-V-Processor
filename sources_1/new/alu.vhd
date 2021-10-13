@@ -34,10 +34,21 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity alu is
     Generic(n: integer := 32;
             shift_n : integer := 5);
-    Port ( r1 : in STD_LOGIC_VECTOR (n-1 downto 0);
-           r2 : in STD_LOGIC_VECTOR (n-1 downto 0);
-           pc : in STD_LOGIC_VECTOR (n-1 downto 0);
-           i : in STD_LOGIC_VECTOR (n-1 downto 0); --instruction
+    Port ( a : in STD_LOGIC_VECTOR (n-1 downto 0);
+           b : in STD_LOGIC_VECTOR (n-1 downto 0);
+           fadd : in STD_LOGIC;
+           sub_bit : in STD_LOGIC;
+           fsr : in STD_LOGIC;
+           arith_bit : in STD_LOGIC;
+           fsl : in STD_LOGIC;
+           fl : in STD_LOGIC;
+           comp_signed: in STD_LOGIC;
+           fand : in STD_LOGIC;
+           f_or : in STD_LOGIC;
+           fxor : in STD_LOGIC;
+           g : out STD_LOGIC;
+           l : out STD_LOGIC;
+           e : out STD_LOGIC;
            q : out STD_LOGIC_VECTOR (n-1 downto 0));
 end alu;
 
@@ -121,36 +132,80 @@ architecture RTL of alu is
     signal comp_l : STD_LOGIC;
 
 begin
-
-    gen_a: 
-    for j in 0 to n-1 generate
-        a(j) <= (r1(j) AND NOT i(2)) OR (pc(j) AND NOT (NOT i(6) AND i(5)));
-                                                -- NOT LUI 
-    end generate;
-
-
-    b_eq_rs2 <= i(5) AND NOT i(2) AND (i(6) OR i(4));
-
-    gen_b_31_21:
-    for j in 31 to 20 generate
-        b(j) <= (r2(j) AND b_eq_rs2) OR (i(j) AND i(4) AND NOT i(3) AND i(2)) OR i(31) AND NOT b_eq_rs2;
-                --r2                                               --LUI AUIPC                           --Sign extend
-    end generate; 
-
-    gen_b_19_12:
-    for j in 19 to 12 generate
-        b(j) <= (r2(j) AND b_eq_rs2) OR (i(j) AND i(4) AND NOT i(3) AND i(2)) OR i(2) AND i(3) AND i(j) OR i(31) AND NOT b_eq_rs2;
-            --r2                                               --LUI AUIPC                                   --JAL                        --Sign extend
-    end generate; 
-
     --Not setup yet
     add_sub: adder_n_bit
         Generic map(n=>n)
         Port Map(
-            a => l_not,
-            b => l_bus(0),
-            sel => invert,
-            q => l
+            a => a,
+            b => b,
+            sub => sub_bit,
+            q => adder_out
         );
+
+    and_op: and_bus
+        Generic map(n => n)
+        Port Map( 
+            a => a,
+            b => b,
+            q => and_out
+        );
+
+    or_op: or_bus
+    Generic map(n => n)
+    Port Map( 
+        a => a,
+        b => b,
+        q => or_out
+    );
+
+    xor_op: xor_bus
+    Generic map(n => n)
+    Port Map( 
+        a => a,
+        b => b,
+        q => xor_out
+    );
+
+    bsr: barrel_shift_right
+    Generic map(
+        n => n,
+        shift_n => shift_n)
+    Port Map( 
+        d => a,
+        sft => b(shift_n-1 downto 0),
+        arith => arith_bit,
+        z => sr_out
+    );
+
+    bsl: barrel_shift_left
+    Generic map(
+        n => n,
+        shift_n => shift_n)
+    Port Map( 
+        d => a,
+        sft => b(shift_n-1 downto 0),
+        z => sl_out
+    );
+
+    comp: comparator_n_bit is
+    Generic Map (n => n)
+    Port Map ( 
+        a => a,
+        b => b,
+        sign_n_unsign => comp_signed,
+        g => comp_g,
+        e => comp_e,
+        l => comp_l
+    );
+
+    gen_alu_out:
+    for i in n-1 to 1 generate
+        q(i) = (fadd AND adder_out(i)) OR (fsr AND sr_out(i)) OR (fsl AND sl_out(i)) OR (fand AND and_out(i)) OR (f_or AND or_out(i)) OR (fxor AND xor_out(i));
+    end generate;
+    q(0) = (fadd AND adder_out(0)) OR (fsr AND sr_out(0)) OR (fsl AND sl_out(0)) OR (fand AND and_out(0)) OR (f_or AND or_out(0)) OR (fxor AND xor_out(0)) OR (fl AND comp_l);
+
+    g <= comp_g;
+    l <= comp_l;
+    e <= comp_e;
 
 end RTL;
