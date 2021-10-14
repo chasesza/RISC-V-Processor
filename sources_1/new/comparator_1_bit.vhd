@@ -45,6 +45,6 @@ begin
 
      g <= a AND NOT b;
      l <= NOT a AND b;
-     e <= NOT a AND NOT b OR a AND b;
+     e <= ((NOT a) AND (NOT b)) OR (a AND b);
 
 end RTL;
