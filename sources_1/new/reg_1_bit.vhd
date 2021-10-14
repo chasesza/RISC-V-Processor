@@ -28,6 +28,7 @@ begin
     q <= q_int;
 
     clk_proc: process(clk)
+    begin
         if rising_edge(clk) then
             q_int <= (d AND en) OR (q_int AND (NOT en)); 
         end if;
