@@ -129,7 +129,6 @@ architecture RTL of alu is
     signal comp_l : STD_LOGIC;
 
 begin
-    --Not setup yet
     add_sub: adder_n_bit
         Generic map(n=>n)
         Port Map(
