@@ -53,7 +53,9 @@ entity decoder is
            comp_signed: out STD_LOGIC;
            fand : out STD_LOGIC;
            f_or : out STD_LOGIC;
-           fxor : out STD_LOGIC);
+           fxor : out STD_LOGIC;
+           rd : out STD_LOGIC_VECTOR(4 downto 0)
+        );
 end decoder;
 
 architecture RTL of decoder is
@@ -162,5 +164,10 @@ begin
     end generate;
     
     y_pc(0) <= jalr AND i(20);
+
+    gen_rd:
+    for j in 4 downto 0 generate
+        rd <= i(j+7) AND ((NOT i(5)) OR i(4) OR i(3) OR i(2));
+    end generate;
 
 end RTL;

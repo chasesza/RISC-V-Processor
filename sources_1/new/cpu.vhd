@@ -15,7 +15,6 @@ entity cpu is
             shift_n : integer := 5);
     Port ( inst : in STD_LOGIC_VECTOR (n-1 downto 0);
            pc : out STD_LOGIC_VECTOR (n-1 downto 0);
-           address : out STD_LOGIC_VECTOR (n-1 downto 0);
            d : out STD_LOGIC_VECTOR (n-1 downto 0);
            address : out STD_LOGIC_VECTOR (n-1 downto 0)
            read_n_write : out STD_LOGIC
@@ -46,10 +45,14 @@ architecture RTL of cpu is
                comp_signed: out STD_LOGIC;
                fand : out STD_LOGIC;
                f_or : out STD_LOGIC;
-               fxor : out STD_LOGIC);
+               fxor : out STD_LOGIC;
+               rd : out STD_LOGIC_VECTOR(4 downto 0)
+               );
     end component;
 
     --Decoder output signals
+    signal decoder_a : STD_LOGIC_VECTOR (31 downto 0);
+    signal decoder_b : STD_LOGIC_VECTOR (31 downto 0);
     signal decoder_x_pc : STD_LOGIC_VECTOR (31 downto 0);
     signal decoder_y_pc : STD_LOGIC_VECTOR (31 downto 0);
     signal decoder_fadd : STD_LOGIC;
@@ -65,7 +68,8 @@ architecture RTL of cpu is
     signal decoder_comp_signed: STD_LOGIC;
     signal decoder_fand : STD_LOGIC;
     signal decoder_f_or : STD_LOGIC;
-    signal decoder_fxor : STD_LOGIC);
+    signal decoder_fxor : STD_LOGIC;
+    signal decoder_rd : STD_LOGIC_VECTOR(4 downto 0);
 
 
     component alu is
@@ -112,7 +116,7 @@ architecture RTL of cpu is
 
     --CPU register outputs
     signal cpu_reg_q1 : STD_LOGIC_VECTOR(n-1 downto 0);
-    signal cpu_reg_q2 : STD_LOGIC_VECTOR(n-1 downto 0)
+    signal cpu_reg_q2 : STD_LOGIC_VECTOR(n-1 downto 0);
 
     component pc_ctl is
         Generic (n : integer := 32);
@@ -133,6 +137,91 @@ architecture RTL of cpu is
             );
     end component;
 
+    signal pc_ctl_q : STD_LOGIC_VECTOR(n-1 downto 0);
+
 begin
+
+    q <= pc_ctl_q;
+
+    gen_decoder: decoder
+        Port ( 
+            i => inst,
+            pc => pc_ctl_q,
+            r1 => cpu_reg_q1,
+            r2 => cpu_reg_q2,
+            a => decoder_a,
+            b => decoder_b,
+            x_pc => decoder_x_pc,
+            y_pc => decoder_y_pc,
+            fadd => decoder_fadd,
+            sub_bit => decoder_sub_bit,
+            fsr => decoder_fsr,
+            arith_bit => decoder_arith_bit,
+            fsl => decoder_fsl,
+            be => decoder_be,
+            bne => decoder_bne,
+            bl => decoder_bl,
+            bg => decoder_bg,
+            fl => decoder_fl,
+            comp_signed => decoder_comp_signed,
+            fand => decoder_fand,
+            f_or => decoder_f_or,
+            fxor => decoder_fxor,
+            rd => decoder_rd
+        );
+
+    gen_alu: alu
+        Generic Map(n => n, shift_n => shift_n)
+        Port Map( 
+            a => decoder_a,
+            b => decoder_b,
+            fadd => decoder_fadd,
+            sub_bit => decoder_sub_bit,
+            fsr => decoder_fsr,
+            arith_bit => decoder_arith_bit,
+            fsl => decoder_fsl,
+            fl => decoder_fl,
+            comp_signed => decoder_comp_signed,
+            fand => decoder_fand,
+            f_or => decoder_f_or,
+            fxor => decoder_fxor,
+            g  => alu_g,
+            l  => alu_l,
+            e  => alu_e,
+            q  => alu_q
+        );
+
+        gen_cpu_reg: cpu_regs
+            Generic Map (n => n)
+            Port Map(
+                r1  => inst(19 downto 15),
+                r2  => inst(24 downto 20),
+                rd  => decoder_rd,
+                d  => alu_q,
+                stall_pipeline => '0',
+                n_rst => n_rst,
+                clk => clk,
+                q1 => cpu_reg_q1,
+                q2 => cpu_reg_q2
+        );
+
+        gen_pc_ctl: pc_ctl
+            Generic Map (n => n)
+            Port Map ( 
+                pc => ,
+                x_pc => ,
+                y_pc => ,
+                clk => ,
+                n_rst => ,
+                stall_pipeline => ,
+                be => ,
+                bne => ,
+                bl => ,
+                bg => ,
+                e => ,
+                g => ,
+                l => ,
+                q => 
+            );
 
 end RTL;
