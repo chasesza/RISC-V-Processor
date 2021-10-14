@@ -32,7 +32,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity equal_n_bit is
-    Generic(n: integer := 32);
+    Generic(n: integer := 5);
     Port ( a : in STD_LOGIC_VECTOR (n-1 downto 0);
            b : in STD_LOGIC_VECTOR (n-1 downto 0);
            q : out STD_LOGIC);
@@ -40,7 +40,7 @@ end equal_n_bit;
 
 architecture RTL of equal_n_bit is
 
-    signal e : STD_LOGIC_VECTOR (n-2 downto 0);
+    signal e : STD_LOGIC_VECTOR (n-1 downto 0);
 
     component eq_1_bit is
     Port ( a : in STD_LOGIC;
@@ -52,12 +52,7 @@ architecture RTL of equal_n_bit is
 
 begin
 
-    eq_bit_0: eq_1_bit Port Map(
-        a => a(0),
-        b => b(0),
-        c => '1',
-        q => e(0)
-    );
+    e(0) <= (a(0) AND b(0)) OR ((NOT a(0)) AND (NOT b(0)));
     
     gen_eq:
     for i in 1 to n-1 generate

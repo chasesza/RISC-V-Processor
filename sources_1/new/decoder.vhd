@@ -95,12 +95,12 @@ begin
     jal <= i(3) AND i(2);
 
     gen_alu_b_31_12:
-    for j in 31 to 12 generate
+    for j in 31 downto 12 generate
         b(j) <= (b_rs AND r2(j)) OR (i(j) AND imm_u) OR (i(31) AND (imm_i OR imm_s));
     end generate;
 
     gen_alu_b_11_5:
-    for j in 11 to 5 generate
+    for j in 11 downto 5 generate
         b(j) <= (b_rs AND r2(j)) OR (i(j+20) AND (imm_i OR imm_s));
     end generate;
     
@@ -110,7 +110,7 @@ begin
                                                                         --for pc+4 in jal/jalr
 
     gen_alu_b_2_0:
-    for j in 2 to 0 generate
+    for j in 2 downto 0 generate
         b(j) <= (b_rs AND r2(j)) OR (i(j+20) AND imm_i) OR (i(j+7) AND imm_s);
     end generate;
 
@@ -135,29 +135,29 @@ begin
     --PC adder inputs
     jalr <= (NOT i(4)) AND (NOT i(3)) AND i(2);
     gen_pc_x:
-    for j in 31 to 0 generate
+    for j in 31 downto 0 generate
         x_pc(j) <= (jalr AND r1(j)) OR ((NOT jalr) and pc(j));
     end generate;
 
     gen_pc_y_31_20:
-    for j in 31 to 20 generate
+    for j in 31 downto 20 generate
         y_pc(j) <= i(31) AND (jalr OR imm_b OR imm_j);
     end generate;
 
     gen_pc_y_19_12:
-    for j in 19 to 12 generate
+    for j in 19 downto 12 generate
         y_pc(j) <= (i(31) AND (jalr OR imm_b)) OR (imm_j AND i(j));
     end generate;
 
     y_pc(11) <= (i(31) AND jalr) OR (imm_b AND i(7)) OR (imm_j AND i(20));
     
     gen_pc_y_10_5:
-    for j in 10 to 5 generate
+    for j in 10 downto 5 generate
         y_pc(j) <= (imm_j OR jalr OR imm_b) AND i(j+20);
     end generate;
     
     gen_pc_y_4_1:
-    for j in 4 to 1 generate
+    for j in 4 downto 1 generate
         y_pc(j) <= ((imm_j OR jalr) AND i(j+20)) OR (imm_b AND i(j+7));
     end generate;
     

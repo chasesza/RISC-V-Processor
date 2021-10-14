@@ -15,6 +15,7 @@ entity reg_1_bit is
         d : in STD_LOGIC;
         en : in STD_LOGIC;
         clk : in STD_LOGIC;
+        n_rst : in STD_LOGIC;
         q : out STD_LOGIC
     );
 end reg_1_bit;
@@ -30,7 +31,11 @@ begin
     clk_proc: process(clk)
     begin
         if rising_edge(clk) then
-            q_int <= (d AND en) OR (q_int AND (NOT en)); 
+            if n_rst = '0' then
+                q_int <= '0';
+            else
+                q_int <= n_rst AND ((d AND en) OR (q_int AND (NOT en)));
+            end if;
         end if;
     end process clk_proc;
 

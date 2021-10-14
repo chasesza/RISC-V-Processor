@@ -16,6 +16,7 @@ entity reg_n_bit is
         d : in STD_LOGIC_VECTOR(n-1 downto 0);
         en : in STD_LOGIC;
         clk : in STD_LOGIC;
+        n_rst : in STD_LOGIC;
         q : out STD_LOGIC_VECTOR(n-1 downto 0)
     );
 end reg_n_bit;
@@ -26,6 +27,7 @@ architecture RTL of reg_n_bit is
         Port(
             d : in STD_LOGIC;
             en : in STD_LOGIC;
+            n_rst : in STD_LOGIC;
             clk : in STD_LOGIC;
             q : out STD_LOGIC
         );
@@ -34,12 +36,13 @@ architecture RTL of reg_n_bit is
 begin
 
     gen_reg_n_bit:
-    for i in n-1 to 0 generate
+    for i in n-1 downto 0 generate
         gen_reg_1_bit:
         reg_1_bit Port Map (
             d => d(i),
             en => en,
             clk => clk,
+            n_rst => n_rst,
             q => q(i)
         );
     end generate;
