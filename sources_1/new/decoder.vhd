@@ -34,6 +34,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity decoder is
     Port ( i : in STD_LOGIC_VECTOR (31 downto 0);
            pc : in STD_LOGIC_VECTOR (31 downto 0);
+           r1 : in STD_LOGIC_VECTOR (31 downto 0);
+           r2 : in STD_LOGIC_VECTOR (31 downto 0);
            a : out STD_LOGIC_VECTOR (31 downto 0);
            b : out STD_LOGIC_VECTOR (31 downto 0);
            x_pc : out STD_LOGIC_VECTOR (31 downto 0); --pc input x
@@ -80,7 +82,7 @@ begin
 
     gen_alu_a: 
     for j in 0 to 31 generate
-        a(j) <= a_rs AND r1(j) OR a_pc AND pc(j);
+        a(j) <= (a_rs AND r1(j)) OR (a_pc AND pc(j));
     end generate; 
 
     --ALU input b
@@ -99,12 +101,12 @@ begin
 
     gen_alu_b_11_5:
     for j in 11 to 5 generate
-        b(j) <= (b_rs AND r2(j)) OR i(j+20) AND (imm_i OR imm_s);
+        b(j) <= (b_rs AND r2(j)) OR (i(j+20) AND (imm_i OR imm_s));
     end generate;
     
-    b(4) <= (b_rs AND r2(j)) OR (i(4+20) AND imm_i) OR (i(4+7) AND imm_s);
+    b(4) <= (b_rs AND r2(4)) OR (i(4+20) AND imm_i) OR (i(4+7) AND imm_s);
 
-    b(3) <= (b_rs AND r2(j)) OR (i(3+20) AND imm_i) OR (i(3+7) AND imm_s) OR (i(6) AND i(2));
+    b(3) <= (b_rs AND r2(3)) OR (i(3+20) AND imm_i) OR (i(3+7) AND imm_s) OR (i(6) AND i(2));
                                                                         --for pc+4 in jal/jalr
 
     gen_alu_b_2_0:
@@ -124,7 +126,7 @@ begin
     be <= comp_b AND (NOT i(14)) AND (NOT i(12)); --equal
     bne <= comp_b AND (NOT i(14)) AND i(12); --not equal
     bg <= comp_b AND i(14) AND i(12); --greater than or equal to
-    bl <= comp_b AND i(14) AND (NOT i(12)));
+    bl <= comp_b AND i(14) AND (NOT i(12));
     comp_signed <= NOT ((comp_b AND i(13)) OR (comp_ir AND i(12))); --signed greater than/less than comparison
     fand <= i(4) AND (NOT i(2)) AND i(14) AND i(13) AND i(12); --and
     f_or <= i(4) AND (NOT i(2)) AND i(14) AND i(13) AND (NOT i(12)); --or
@@ -142,11 +144,23 @@ begin
         y_pc(j) <= i(31) AND (jalr OR imm_b OR imm_j);
     end generate;
 
-    gen_pc_y_19_13:
+    gen_pc_y_19_12:
     for j in 19 to 12 generate
         y_pc(j) <= (i(31) AND (jalr OR imm_b)) OR (imm_j AND i(j));
     end generate;
 
     y_pc(11) <= (i(31) AND jalr) OR (imm_b AND i(7)) OR (imm_j AND i(20));
+    
+    gen_pc_y_10_5:
+    for j in 10 to 5 generate
+        y_pc(j) <= (imm_j OR jalr OR imm_b) AND i(j+20);
+    end generate;
+    
+    gen_pc_y_4_1:
+    for j in 4 to 1 generate
+        y_pc(j) <= ((imm_j OR jalr) AND i(j+20)) OR (imm_b AND i(j+7));
+    end generate;
+    
+    y_pc(0) <= jalr AND i(20);
 
 end RTL;
