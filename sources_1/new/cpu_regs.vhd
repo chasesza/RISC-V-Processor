@@ -17,6 +17,7 @@ entity cpu_regs is
         r2 : in STD_LOGIC_VECTOR(4 downto 0);
         rd : in STD_LOGIC_VECTOR(4 downto 0);
         d : in STD_LOGIC_VECTOR(n-1 downto 0);
+        stall_pipeline : in STD_LOGIC;
         n_rst : in STD_LOGIC;
         clk : in STD_LOGIC;
         q1 : out STD_LOGIC_VECTOR(n-1 downto 0);
@@ -50,6 +51,7 @@ architecture RTL of cpu_regs is
     signal q_arr : array_of_std_logic_vec;
 
     signal en_vec : STD_LOGIC_VECTOR (n-1 downto 1);
+    signal en_vec_with_stall : STD_LOGIC_VECTOR (n-1 downto 1);
     signal s1_vec : STD_LOGIC_VECTOR (n-1 downto 1);
     signal s2_vec : STD_LOGIC_VECTOR (n-1 downto 1);
     
@@ -92,6 +94,10 @@ begin
         );
     end generate;
 
+    for i in 1 to n-1 generate
+        en_vec_with_stall(i) <= (NOT stall_pipeline) AND en_vec(i);
+    end generate;
+
     gen_n_bit_regs:
     for i in n-1 downto 1 generate
         gen_reg_n_bit:
@@ -99,7 +105,7 @@ begin
         Generic Map(n=>n)
         Port Map (
             d => d,
-            en => en_vec(i),
+            en => en_vec_with_stall(i),
             n_rst => n_rst,
             clk => clk,
             q => q_arr(i)
