@@ -12,8 +12,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity pc_ctl is
     Generic (n : integer := 32);
-    Port ( pc : in STD_LOGIC_VECTOR (n-1 downto 0);
-           x_pc : in STD_LOGIC_VECTOR (n-1 downto 0); --pc input x
+    Port ( x_pc : in STD_LOGIC_VECTOR (n-1 downto 0); --pc input x
            y_pc : in STD_LOGIC_VECTOR (n-1 downto 0); --alternate pc input y (default is 4)
            clk : in STD_LOGIC;
            n_rst : in STD_LOGIC;
