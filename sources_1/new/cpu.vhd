@@ -208,20 +208,19 @@ begin
         gen_pc_ctl: pc_ctl
             Generic Map (n => n)
             Port Map ( 
-                pc => ,
-                x_pc => ,
-                y_pc => ,
-                clk => ,
-                n_rst => ,
-                stall_pipeline => ,
-                be => ,
-                bne => ,
-                bl => ,
-                bg => ,
-                e => ,
-                g => ,
-                l => ,
-                q => 
+                x_pc => decoder_x_pc,
+                y_pc => decoder_y_pc,
+                clk => clk,
+                n_rst => n_rst,
+                stall_pipeline => '0',
+                be => decoder_be,
+                bne => decoder_bne,
+                bl => decoder_bl,
+                bg => decoder_bg,
+                e => alu_e,
+                g => alu_g,
+                l => alu_l,
+                q => pc_ctl_q
             );
 
 end RTL;
