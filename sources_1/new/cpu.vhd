@@ -20,7 +20,8 @@ entity cpu is
            pc : out STD_LOGIC_VECTOR (n-1 downto 0);
            d : out STD_LOGIC_VECTOR (n-1 downto 0);
            address : out STD_LOGIC_VECTOR (n-1 downto 0);
-           read_n_write : out STD_LOGIC
+           store : out STD_LOGIC,
+           load : out STD_LOGIC
         );
 end cpu;
 
@@ -50,7 +51,9 @@ architecture RTL of cpu is
                f_or : out STD_LOGIC;
                fxor : out STD_LOGIC;
                rd : out STD_LOGIC_VECTOR(4 downto 0);
-               load_dest : out STD_LOGIC_VECTOR(4 downto 0);
+               load_dest : out STD_LOGIC_VECTOR(4 downto 0)
+               store_inst: out STD_LOGIC;
+               load_inst: out STD_LOGIC;
                jal_or_jalr : out STD_LOGIC
                );
     end component;
@@ -150,6 +153,8 @@ architecture RTL of cpu is
 begin
 
     pc <= pc_ctl_q;
+    d <= cpu_reg_q2;
+    address <= alu_q;
 
     gen_decoder: decoder
         Port Map( 
@@ -177,6 +182,8 @@ begin
             fxor => decoder_fxor,
             rd => decoder_rd,
             load_dest => decoder_load_dest,
+            store_inst => store,
+            load_inst => load,
             jal_or_jalr => decoder_jal_or_jalr
         );
 

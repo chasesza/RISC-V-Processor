@@ -56,6 +56,8 @@ entity decoder is
            fxor : out STD_LOGIC;
            rd : out STD_LOGIC_VECTOR(4 downto 0);
            load_dest : out STD_LOGIC_VECTOR(4 downto 0);
+           store_inst: out STD_LOGIC;
+           load_inst: out STD_LOGIC;
            jal_or_jalr : out STD_LOGIC
         );
 end decoder;
@@ -175,5 +177,8 @@ begin
         rd(j) <= i(j+7) AND ((NOT i(5)) OR i(4) OR i(3) OR i(2)) AND (i(5) OR i(4));
         load_dest(j) <= i(j+7) AND ((NOT i(5)) OR i(4) OR i(3) OR i(2)) AND (NOT (i(5) OR i(4)));
     end generate;
+
+    store_inst <= (NOT i(6)) AND i(5) AND (NOT i(4));
+    store_inst <= (NOT i(6)) AND (NOT i(5)) AND (NOT i(4));
 
 end RTL;
