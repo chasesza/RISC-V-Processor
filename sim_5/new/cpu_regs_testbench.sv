@@ -18,6 +18,7 @@ module cpu_regs_testbench();
         .rd(rd),
         .d(d),
         .n_rst(n_rst),
+        .stall_pipeline(1'b0),
         .clk(clk),
         .q1(q1),
          .q2(q2)
@@ -40,13 +41,13 @@ module cpu_regs_testbench();
         
         d = 32'hAF;
         rd = 5'd7;
-        r1 = 5'd7;
-        r2 = 5'd7;
+        r1 = 5'd8;
+        r2 = 5'd8;
         
          #2;
         d = 32'hFF;
-        rd = 5'd15;
-        r2 = 5'd15;
+        rd = 5'd7;
+        r2 = 5'd7;
         
          #2;
         rd = 5'd0;
