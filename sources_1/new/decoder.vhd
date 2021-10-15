@@ -54,7 +54,9 @@ entity decoder is
            fand : out STD_LOGIC;
            f_or : out STD_LOGIC;
            fxor : out STD_LOGIC;
-           rd : out STD_LOGIC_VECTOR(4 downto 0)
+           rd : out STD_LOGIC_VECTOR(4 downto 0);
+           load_dest : out STD_LOGIC_VECTOR(4 downto 0);
+           jal_or_jalr : out STD_LOGIC
         );
 end decoder;
 
@@ -124,7 +126,8 @@ begin
     arith_bit <= i(30); --arithmetic shift
     fsl <= i(4) AND (NOT i(2)) AND (NOT i(14)) AND (NOT i(13)) AND i(12); --shift left
     comp_b <= i(6) AND i(5) AND (NOT i(2)); --comparator branch instructions
-    fl <= i(4) AND (NOT i(2)) AND (NOT i(14)) AND i(13); --comparator register and immediate instructions - (only less than)
+    comp_ir <= i(4) AND (NOT i(2)) AND (NOT i(14)) AND i(13); --comparator register and immediate instructions - (only less than)
+    fl <= comp_ir;
     be <= comp_b AND (NOT i(14)) AND (NOT i(12)); --equal
     bne <= comp_b AND (NOT i(14)) AND i(12); --not equal
     bg <= comp_b AND i(14) AND i(12); --greater than or equal to
@@ -165,9 +168,12 @@ begin
     
     y_pc(0) <= jalr AND i(20);
 
+    jal_or_jalr <= jal OR jalr;
+
     gen_rd:
     for j in 4 downto 0 generate
-        rd <= i(j+7) AND ((NOT i(5)) OR i(4) OR i(3) OR i(2));
+        rd(j) <= i(j+7) AND ((NOT i(5)) OR i(4) OR i(3) OR i(2)) AND (i(5) OR i(4));
+        load_dest(j) <= i(j+7) AND ((NOT i(5)) OR i(4) OR i(3) OR i(2)) AND (NOT (i(5) OR i(4)));
     end generate;
 
 end RTL;

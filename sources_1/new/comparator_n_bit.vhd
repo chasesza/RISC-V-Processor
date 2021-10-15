@@ -42,14 +42,6 @@ entity comparator_n_bit is
 end comparator_n_bit;
 
 architecture RTL of comparator_n_bit is
-
-    component comparator_1_bit is
-        Port ( a : in STD_LOGIC;
-               b : in STD_LOGIC;
-               g : out STD_LOGIC;
-               e : out STD_LOGIC;
-               l : out STD_LOGIC);
-    end component;
     
     component mux_2_1 is
         Port ( a : in STD_LOGIC;

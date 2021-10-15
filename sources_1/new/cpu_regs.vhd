@@ -93,7 +93,8 @@ begin
             q => s2_vec(i)
         );
     end generate;
-
+    
+    gen_en_vec_with_stall:
     for i in 1 to n-1 generate
         en_vec_with_stall(i) <= (NOT stall_pipeline) AND en_vec(i);
     end generate;

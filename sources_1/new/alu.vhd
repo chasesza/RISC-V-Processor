@@ -195,7 +195,7 @@ begin
     );
 
     gen_alu_out:
-    for i in n-1 to 1 generate
+    for i in n-1 downto 1 generate
         q(i) <= (fadd AND adder_out(i)) OR (fsr AND sr_out(i)) OR (fsl AND sl_out(i)) OR (fand AND and_out(i)) OR (f_or AND or_out(i)) OR (fxor AND xor_out(i));
     end generate;
     q(0) <= (fadd AND adder_out(0)) OR (fsr AND sr_out(0)) OR (fsl AND sl_out(0)) OR (fand AND and_out(0)) OR (f_or AND or_out(0)) OR (fxor AND xor_out(0)) OR (fl AND comp_l);

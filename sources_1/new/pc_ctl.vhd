@@ -24,6 +24,7 @@ entity pc_ctl is
            e : in STD_LOGIC;
            g : in STD_LOGIC;
            l : in STD_LOGIC;
+           jal_or_jalr : in STD_LOGIC;
            q : out STD_LOGIC_VECTOR (n-1 downto 0)
         );
 end pc_ctl;
@@ -60,7 +61,7 @@ architecture RTL of pc_ctl is
 
 begin
 
-    alt_y <= (be AND e) OR (bne AND (NOT e)) OR (bg AND g) OR (bl AND l);
+    alt_y <= (be AND e) OR (bne AND (NOT e)) OR (bg AND g) OR (bl AND l) OR jal_or_jalr;
 
     gen_y_to_adder_0_1:
     for i in 0 to 1 generate
@@ -68,7 +69,7 @@ begin
     end generate;
 
     --y_to_adder(2) <= (alt_y AND y_pc(i)) OR (NOT alt_y);
-    y_to_adder(2) <= y_pc(i) OR (NOT alt_y);
+    y_to_adder(2) <= y_pc(2) OR (NOT alt_y);
 
     gen_y_to_adder_3_31:
     for i in 3 to n-1 generate

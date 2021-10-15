@@ -13,10 +13,13 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity cpu is
     Generic(n: integer := 32;
             shift_n : integer := 5);
-    Port ( inst : in STD_LOGIC_VECTOR (n-1 downto 0);
+    Port ( 
+           clk : in STD_LOGIC;
+           n_rst : in STD_LOGIC;
+           inst : in STD_LOGIC_VECTOR (n-1 downto 0);
            pc : out STD_LOGIC_VECTOR (n-1 downto 0);
            d : out STD_LOGIC_VECTOR (n-1 downto 0);
-           address : out STD_LOGIC_VECTOR (n-1 downto 0)
+           address : out STD_LOGIC_VECTOR (n-1 downto 0);
            read_n_write : out STD_LOGIC
         );
 end cpu;
@@ -46,7 +49,9 @@ architecture RTL of cpu is
                fand : out STD_LOGIC;
                f_or : out STD_LOGIC;
                fxor : out STD_LOGIC;
-               rd : out STD_LOGIC_VECTOR(4 downto 0)
+               rd : out STD_LOGIC_VECTOR(4 downto 0);
+               load_dest : out STD_LOGIC_VECTOR(4 downto 0);
+               jal_or_jalr : out STD_LOGIC
                );
     end component;
 
@@ -70,6 +75,8 @@ architecture RTL of cpu is
     signal decoder_f_or : STD_LOGIC;
     signal decoder_fxor : STD_LOGIC;
     signal decoder_rd : STD_LOGIC_VECTOR(4 downto 0);
+    signal decoder_load_dest : STD_LOGIC_VECTOR(4 downto 0);
+    signal decoder_jal_or_jalr : STD_LOGIC;
 
 
     component alu is
@@ -97,7 +104,7 @@ architecture RTL of cpu is
     signal alu_g : STD_LOGIC;
     signal alu_l : STD_LOGIC;
     signal alu_e : STD_LOGIC;
-    signal alu_q : STD_LOGIC_VECTOR (n-1 downto 0));
+    signal alu_q : STD_LOGIC_VECTOR (n-1 downto 0);
 
     component cpu_regs is
         Generic (n : integer := 32);
@@ -120,7 +127,7 @@ architecture RTL of cpu is
 
     component pc_ctl is
         Generic (n : integer := 32);
-        Port ( pc : in STD_LOGIC_VECTOR (n-1 downto 0);
+        Port (
                x_pc : in STD_LOGIC_VECTOR (n-1 downto 0); --pc adder input x
                y_pc : in STD_LOGIC_VECTOR (n-1 downto 0); --alternate pc adder input y (default is 4)
                clk : in STD_LOGIC;
@@ -133,6 +140,7 @@ architecture RTL of cpu is
                e : in STD_LOGIC;
                g : in STD_LOGIC;
                l : in STD_LOGIC;
+               jal_or_jalr : in STD_LOGIC;
                q : out STD_LOGIC_VECTOR (n-1 downto 0)
             );
     end component;
@@ -141,10 +149,10 @@ architecture RTL of cpu is
 
 begin
 
-    q <= pc_ctl_q;
+    pc <= pc_ctl_q;
 
     gen_decoder: decoder
-        Port ( 
+        Port Map( 
             i => inst,
             pc => pc_ctl_q,
             r1 => cpu_reg_q1,
@@ -167,7 +175,9 @@ begin
             fand => decoder_fand,
             f_or => decoder_f_or,
             fxor => decoder_fxor,
-            rd => decoder_rd
+            rd => decoder_rd,
+            load_dest => decoder_load_dest,
+            jal_or_jalr => decoder_jal_or_jalr
         );
 
     gen_alu: alu
@@ -220,6 +230,7 @@ begin
                 e => alu_e,
                 g => alu_g,
                 l => alu_l,
+                jal_or_jalr => decoder_jal_or_jalr,
                 q => pc_ctl_q
             );
 
