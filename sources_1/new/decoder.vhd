@@ -179,6 +179,6 @@ begin
     end generate;
 
     store_inst <= (NOT i(6)) AND i(5) AND (NOT i(4));
-    store_inst <= (NOT i(6)) AND (NOT i(5)) AND (NOT i(4));
+    load_inst <= (NOT i(6)) AND (NOT i(5)) AND (NOT i(4));
 
 end RTL;

@@ -20,7 +20,7 @@ entity cpu is
            pc : out STD_LOGIC_VECTOR (n-1 downto 0);
            d : out STD_LOGIC_VECTOR (n-1 downto 0);
            address : out STD_LOGIC_VECTOR (n-1 downto 0);
-           store : out STD_LOGIC,
+           store : out STD_LOGIC;
            load : out STD_LOGIC
         );
 end cpu;
@@ -51,7 +51,7 @@ architecture RTL of cpu is
                f_or : out STD_LOGIC;
                fxor : out STD_LOGIC;
                rd : out STD_LOGIC_VECTOR(4 downto 0);
-               load_dest : out STD_LOGIC_VECTOR(4 downto 0)
+               load_dest : out STD_LOGIC_VECTOR(4 downto 0);
                store_inst: out STD_LOGIC;
                load_inst: out STD_LOGIC;
                jal_or_jalr : out STD_LOGIC
