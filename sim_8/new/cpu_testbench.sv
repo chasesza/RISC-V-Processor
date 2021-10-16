@@ -9,7 +9,8 @@ module cpu_testbench();
     wire [31:0] pc;
     wire [31:0] d;
     wire [31:0] address;
-    wire read_n_write;
+    wire store;
+    wire load;
     
     
     cpu #(32, 5) cpu_tst(
@@ -19,7 +20,8 @@ module cpu_testbench();
        .pc(pc),
        .d(d),
        .address(address),
-       .read_n_write(read_n_write)
+       .store(store),
+       .load(load)
     );
     
     initial 
@@ -36,14 +38,21 @@ module cpu_testbench();
         n_rst = 1'b1;
         
         
+        //lui x31, 0xF
          #2;
          inst = 32'b00000000000000001111111110110111;
         
+        //addi x30, x31, 0x7FF
          #2; 
-         inst = 32'b11111111111111111000111110010011;
+         inst = 32'b01111111111111111000111100010011;
          
+         //add x29, x30, x31
+         #2
+         inst = 32'b00000001111111110000111010110011;
+         
+         //sw x31, x30, 0xABFF
          #2;
-         inst = 32'b10101011111111111010010100100011;
+         inst = 32'b00000001111011111010000010100011;
          
          #2;
          inst = 32'b00000001000000000000000011101111;
