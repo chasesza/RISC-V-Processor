@@ -41,7 +41,87 @@ for line in lines:
         s += format(int(d[1][1:], 10), "05b") #rs1
         s += "000" #func3
         s += imm[1:4] + imm[11] #b-type
-        s += "1100111" #opcode
+        s += "1100011" #opcode
+    elif d[0].lower() == "bne":
+        imm = format(int(d[3], 16), "013b") #imm
+        imm = str(imm)[::-1] #reverse to make indices match
+        s = imm[12] + imm[5:11]  #b-type
+        s += format(int(d[2][1:], 10), "05b") #rs2
+        s += format(int(d[1][1:], 10), "05b") #rs1
+        s += "001" #func3
+        s += imm[1:4] + imm[11] #b-type
+        s += "1100011" #opcode
+    elif d[0].lower() == "blt":
+        imm = format(int(d[3], 16), "013b") #imm
+        imm = str(imm)[::-1] #reverse to make indices match
+        s = imm[12] + imm[5:11]  #b-type
+        s += format(int(d[2][1:], 10), "05b") #rs2
+        s += format(int(d[1][1:], 10), "05b") #rs1
+        s += "100" #func3
+        s += imm[1:4] + imm[11] #b-type
+        s += "1100011" #opcode
+    elif d[0].lower() == "bge":
+        imm = format(int(d[3], 16), "013b") #imm
+        imm = str(imm)[::-1] #reverse to make indices match
+        s = imm[12] + imm[5:11]  #b-type
+        s += format(int(d[2][1:], 10), "05b") #rs2
+        s += format(int(d[1][1:], 10), "05b") #rs1
+        s += "101" #func3
+        s += imm[1:4] + imm[11] #b-type
+        s += "1100011" #opcode
+    elif d[0].lower() == "bltu":
+        imm = format(int(d[3], 16), "013b") #imm
+        imm = str(imm)[::-1] #reverse to make indices match
+        s = imm[12] + imm[5:11]  #b-type
+        s += format(int(d[2][1:], 10), "05b") #rs2
+        s += format(int(d[1][1:], 10), "05b") #rs1
+        s += "110" #func3
+        s += imm[1:4] + imm[11] #b-type
+        s += "1100011" #opcode
+    elif d[0].lower() == "bgeu":
+        imm = format(int(d[3], 16), "013b") #imm
+        imm = str(imm)[::-1] #reverse to make indices match
+        s = imm[12] + imm[5:11]  #b-type
+        s += format(int(d[2][1:], 10), "05b") #rs2
+        s += format(int(d[1][1:], 10), "05b") #rs1
+        s += "111" #func3
+        s += imm[1:4] + imm[11] #b-type
+        s += "1100011" #opcode
+    elif d[0].lower() == "lb":
+        imm = format(int(d[3], 16), "012b") #imm
+        s = imm #i-type
+        s += format(int(d[2][1:], 10), "05b") #rs1
+        s += "000" #func3
+        s += format(int(d[1][1:], 10), "05b") #rd
+        s += "0000011" #opcode
+    elif d[0].lower() == "lh":
+        imm = format(int(d[3], 16), "012b") #imm
+        s = imm #i-type
+        s += format(int(d[2][1:], 10), "05b") #rs1
+        s += "001" #func3
+        s += format(int(d[1][1:], 10), "05b") #rd
+        s += "0000011" #opcode
+    elif d[0].lower() == "lw":
+        imm = format(int(d[3], 16), "012b") #imm
+        s = imm #i-type
+        s += format(int(d[2][1:], 10), "05b") #rs1
+        s += "010" #func3
+        s += format(int(d[1][1:], 10), "05b") #rd
+        s += "0000011" #opcode
+    elif d[0].lower() == "lbu":
+        imm = format(int(d[3], 16), "012b") #imm
+        s = imm #i-type
+        s += format(int(d[2][1:], 10), "05b") #rs1
+        s += "100" #func3
+        s += format(int(d[1][1:], 10), "05b") #rd
+        s += "0000011" #opcode
+    elif d[0].lower() == "lhu":
+        imm = format(int(d[3], 16), "012b") #imm
+        s = imm #i-type
+        s += format(int(d[2][1:], 10), "05b") #rs1
+        s += "101" #func3
+        s += format(int(d[1][1:], 10), "05b") #rd
+        s += "0000011" #opcode
     else:
         valid = False
     if valid:
