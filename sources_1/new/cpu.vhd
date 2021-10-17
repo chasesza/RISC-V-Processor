@@ -16,6 +16,7 @@ entity cpu is
     Port ( 
            clk : in STD_LOGIC;
            n_rst : in STD_LOGIC;
+           stall : in STD_LOGIC;
            inst : in STD_LOGIC_VECTOR (n-1 downto 0);
            pc : out STD_LOGIC_VECTOR (n-1 downto 0);
            d : out STD_LOGIC_VECTOR (n-1 downto 0);

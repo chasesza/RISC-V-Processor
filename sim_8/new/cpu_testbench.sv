@@ -5,6 +5,7 @@ module cpu_testbench();
     reg[31:0] inst;
     reg clk;
     reg n_rst;
+    reg stall;
     
     wire [31:0] pc;
     wire [31:0] d;
@@ -17,6 +18,7 @@ module cpu_testbench();
         .clk(clk),
        .n_rst(n_rst),
        .inst(inst),
+       .stall(stall),
        .pc(pc),
        .d(d),
        .address(address),
@@ -28,6 +30,7 @@ module cpu_testbench();
     begin
         clk = 1'b0;
         n_rst = 1'b1;
+        stall = 1'b0;
         
         inst = 32'b0;
         
