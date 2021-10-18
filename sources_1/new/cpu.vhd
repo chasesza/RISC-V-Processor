@@ -16,7 +16,8 @@ entity cpu is
     Port ( 
            clk : in STD_LOGIC;
            n_rst : in STD_LOGIC;
-           stall : in STD_LOGIC;
+           resume : in STD_LOGIC;
+           mem_data : in STD_LOGIC_VECTOR (n-1 downto 0);
            inst : in STD_LOGIC_VECTOR (n-1 downto 0);
            pc : out STD_LOGIC_VECTOR (n-1 downto 0);
            d : out STD_LOGIC_VECTOR (n-1 downto 0);
@@ -59,7 +60,10 @@ architecture RTL of cpu is
                );
     end component;
 
+    signal stall : STD_LOGIC;
+
     --Decoder output signals
+    signal load_inst : STD_LOGIC;
     signal decoder_a : STD_LOGIC_VECTOR (31 downto 0);
     signal decoder_b : STD_LOGIC_VECTOR (31 downto 0);
     signal decoder_x_pc : STD_LOGIC_VECTOR (31 downto 0);
@@ -110,6 +114,16 @@ architecture RTL of cpu is
     signal alu_e : STD_LOGIC;
     signal alu_q : STD_LOGIC_VECTOR (n-1 downto 0);
 
+    component mux_2_1_n_bits_wide is
+        Generic (n : integer := 32);
+        Port ( a : in STD_LOGIC_VECTOR(n-1 downto 0);
+               b : in STD_LOGIC_VECTOR(n-1 downto 0);
+               sel : in STD_LOGIC;
+               q : out STD_LOGIC_VECTOR(n-1 downto 0));
+    end component;
+
+    signal cpu_regs_d : STD_LOGIC_VECTOR(31 downto 0);
+
     component cpu_regs is
         Generic (n : integer := 32);
         Port(
@@ -153,6 +167,9 @@ architecture RTL of cpu is
 
 begin
 
+    stall <= load_inst AND (NOT resume);
+    load <= load_inst;
+
     pc <= pc_ctl_q;
     d <= cpu_reg_q2;
     address <= alu_q;
@@ -184,7 +201,7 @@ begin
             rd => decoder_rd,
             load_dest => decoder_load_dest,
             store_inst => store,
-            load_inst => load,
+            load_inst => load_inst,
             jal_or_jalr => decoder_jal_or_jalr
         );
 
@@ -209,14 +226,22 @@ begin
             q  => alu_q
         );
 
+        gen_cpu_reg_data_mux: mux_2_1_n_bits_wide
+            Generic Map(n => n)
+            Port ( a => mem_data,
+                b => alu_q,
+                sel => resume,
+                q => cpu_regs_d
+            );
+
         gen_cpu_reg: cpu_regs
             Generic Map (n => n)
             Port Map(
                 r1  => inst(19 downto 15),
                 r2  => inst(24 downto 20),
                 rd  => decoder_rd,
-                d  => alu_q,
-                stall_pipeline => '0',
+                d  => cpu_regs_d,
+                stall_pipeline => stall,
                 n_rst => n_rst,
                 clk => clk,
                 q1 => cpu_reg_q1,
@@ -230,7 +255,7 @@ begin
                 y_pc => decoder_y_pc,
                 clk => clk,
                 n_rst => n_rst,
-                stall_pipeline => '0',
+                stall_pipeline => stall,
                 be => decoder_be,
                 bne => decoder_bne,
                 bl => decoder_bl,
