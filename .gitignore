@@ -16,3 +16,4 @@ sources_1/ip/blk_mem_gen_pgm_mem/blk_mem_gen_pgm_mem.xci
 sources_1/ip/blk_mem_gen_pgm_mem/blk_mem_gen_pgm_mem.vho
 sources_1/ip/blk_mem_gen_pgm_mem/blk_mem_gen_pgm_mem.veo
 sources_1/ip/blk_mem_gen_pgm_mem/blk_mem_gen_pgm_mem.dcp
+.vscode/launch.json
