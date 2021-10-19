@@ -228,7 +228,7 @@ begin
 
         gen_cpu_reg_data_mux: mux_2_1_n_bits_wide
             Generic Map(n => n)
-            Port ( a => mem_data,
+            Port Map( a => mem_data,
                 b => alu_q,
                 sel => resume,
                 q => cpu_regs_d
