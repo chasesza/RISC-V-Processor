@@ -1,3 +1,6 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
 entity mem_ctl is
     Generic(
         n : integer := 32;
@@ -11,6 +14,9 @@ entity mem_ctl is
         address : in STD_LOGIC_VECTOR(n-1 downto 0);
         load : in STD_LOGIC;
         store : in STD_LOGIC;
+        sw : in STD_LOGIC_VECTOR(3 downto 0);
+        btn : in STD_LOGIC_VECTOR(3 downto 0);
+        led : out STD_LOGIC_VECTOR(3 downto 0);
         resume: out STD_LOGIC;
         ram_r_addr : out STD_LOGIC_VECTOR(mem_bits-1 downto 0);
         ram_w_addr : out STD_LOGIC_VECTOR(mem_bits-1 downto 0);
@@ -67,7 +73,7 @@ begin
         d => load,
         en => '1',
         clk => clk,
-        n_rst => n_rst;
+        n_rst => n_rst,
         q => prev_load
     );
 
@@ -76,14 +82,14 @@ begin
         d => resume_int,
         en => '1',
         clk => clk,
-        n_rst => n_rst;
+        n_rst => n_rst,
         q => prev_resume
     );
 
     resume <= resume_int;
     resume_int <= load AND ((prev_load AND (NOT prev_resume)) OR address(mem_bits));
     en_ram <= NOT address(mem_bits);
-    write_en <= store AND (NOT address(mem_bits)));
+    write_en <= store AND (NOT address(mem_bits));
 
     ram_r_addr <= address(mem_bits-1 downto 0);
     ram_w_addr <= address(mem_bits-1 downto 0);

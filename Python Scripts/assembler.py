@@ -5,7 +5,10 @@ inp = input()
 src = open(inp+".asm", 'r')
 machine_file = open(inp+".obj", 'w')
 sim_file = open(inp+".txt", 'w')
+coef_file = open(inp+".coe", 'w')
+coef_file.write("memory_initialization_radix=2;\nmemory_initialization_vector=")
 
+first = True
 lines = src.readlines()
 for line in lines:
     d = re.split(", |,| ", line)
@@ -287,10 +290,17 @@ for line in lines:
     else:
         valid = False
     if valid:
+        if first:
+            coef_file.write(machine_instruction)
+            first = False
+        else:
+            coef_file.write(",\n" + machine_instruction)
         sim_file.write("\n\t\t//"+ line +"\t\t#2;\n\t\tinst = 32\'b" + machine_instruction + ";\n")
         machine_instruction += '\n'
         machine_file.write(machine_instruction)
 
+coef_file.write(";\n")
+coef_file.close()
 machine_file.close()
 sim_file.close()
 src.close()
