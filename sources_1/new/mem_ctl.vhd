@@ -18,9 +18,9 @@ entity mem_ctl is
         btn : in STD_LOGIC_VECTOR(3 downto 0);
         led : out STD_LOGIC_VECTOR(3 downto 0);
         resume: out STD_LOGIC;
-        ram_r_addr : out STD_LOGIC_VECTOR(mem_bits-1 downto 0);
-        ram_w_addr : out STD_LOGIC_VECTOR(mem_bits-1 downto 0);
+        ram_addr : out STD_LOGIC_VECTOR(mem_bits-1 downto 0);
         mem_data : out STD_LOGIC_VECTOR(n-1 downto 0);
+        write_data : out STD_LOGIC_VECTOR(n-1 downto 0);
         en_ram : out STD_LOGIC;
         write_en : out STD_LOGIC
     );
@@ -90,9 +90,8 @@ begin
     resume_int <= load AND ((prev_load AND (NOT prev_resume)) OR address(mem_bits));
     en_ram <= NOT address(mem_bits);
     write_en <= store AND (NOT address(mem_bits));
-
-    ram_r_addr <= address(mem_bits-1 downto 0);
-    ram_w_addr <= address(mem_bits-1 downto 0);
+    write_data <= d;
+    ram_addr <= address(mem_bits-1 downto 0);
 
 
     eq_sw_btn: equal_n_bit
