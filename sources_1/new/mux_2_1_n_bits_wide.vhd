@@ -24,7 +24,7 @@ begin
     gen_2_1_mux_n_bit:
     for i in 0 to n-1 generate
         gen_2_1_mux_1_bit:
-        mux_2_1 m0
+        mux_2_1
         Port Map(
             a => a(i),
             b => b(i),

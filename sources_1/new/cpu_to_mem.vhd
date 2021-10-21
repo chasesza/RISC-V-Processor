@@ -126,7 +126,7 @@ begin
         douta => mem_ctl_ram_data
       );
       
-      gen_mem_ctl: mem_ctl 
+      inst_mem_ctl: mem_ctl 
       Generic Map(
           n => n,
           mem_bits => mem_bits
@@ -136,7 +136,7 @@ begin
           clk => clk,
           d => cpu_d,
           ram_data => mem_ctl_ram_data,
-          address => mem_ctl_ram_addr,
+          address => cpu_address,
           load => cpu_load,
           store => cpu_store,
           sw => sw,
@@ -149,5 +149,21 @@ begin
           en_ram => mem_ctl_en_ram,
           write_en => mem_ctl_write_en
       );
+      
+        inst_cpu: cpu 
+        Generic Map(n => n,
+                     shift_n => shift_n)
+             Port Map( 
+                    clk => clk,
+                    n_rst  => n_rst,
+                    resume => mem_ctl_resume,
+                    mem_data => mem_ctl_mem_data,
+                    inst => cpu_inst,
+                    pc => cpu_pc,
+                    d => cpu_d,
+                    address => cpu_address,
+                    store => cpu_store,
+                    load => cpu_load
+                 );
 
 end RTL;
