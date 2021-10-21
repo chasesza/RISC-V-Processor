@@ -34,3 +34,4 @@ sources_1/ip/blk_mem_gen_0/sim/blk_mem_gen_0.v
 sources_1/ip/blk_mem_gen_0/simulation/blk_mem_gen_v8_4.v
 sources_1/ip/blk_mem_gen_0/summary.log
 sources_1/ip/blk_mem_gen_0/synth/blk_mem_gen_0.vhd
+sources_1/ip/blk_mem_gen_pgm_mem/blk_mem_gen_pgm_mem.mif
