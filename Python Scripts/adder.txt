@@ -1,0 +1,39 @@
+
+		//lui     x2,     8               ;0   
+		#2;
+		inst = 32'b00000000000000001000000100110111;
+
+		//addi    x2,     x2,     1       ;4      builds button/sw register address
+		#2;
+		inst = 32'b00000000000100010000000100010011;
+
+		//lui     x3,     12              ;8    
+		#2;
+		inst = 32'b00000000000000001100000110110111;
+
+		//addi    x3,     x3,     1       ;c      builds led register address
+		#2;
+		inst = 32'b00000000000100011000000110010011;
+
+		//lw      x4,     0,      x2      ;10     gets data from button/sw, stores in x4
+		#2;
+		inst = 32'b00000000000000010010001000000011;
+
+		//srai    x5,     x4,     4       ;14     shift data right by 4 to get switches and store in x5
+		#2;
+		inst = 32'b01000000010000100101001010010011;
+
+		//andi    x4,     x4,     15      ;18     bitwise and by 0xF to get buttons and store in x4
+		#2;
+		inst = 32'b00000000111100100111001000010011;
+
+		//add     x6,     x4,     x5      ;1c     add buttons and switches and store in x6
+		#2;
+		inst = 32'b00000000010100100000001100110011;
+
+		//sw      x6,     0,      x3      ;20     stores data from x6 in the led reg
+		#2;
+		inst = 32'b00000000011000011010000000100011;
+
+		//jal     x0,     4294967276      ;24     decrement pc by 40, discard link register		#2;
+		inst = 32'b11111110110111111111000001101111;

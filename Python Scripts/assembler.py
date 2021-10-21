@@ -11,7 +11,9 @@ coef_file.write("memory_initialization_radix=2;\nmemory_initialization_vector=")
 first = True
 lines = src.readlines()
 for line in lines:
-    d = re.split(", |,| ", line)
+    d = re.split("[, |,|\s| ]+", line)
+    print(d)
+    print("\n")
     s=''
     valid = True
     if d[0].lower() == "lui":
@@ -131,7 +133,7 @@ for line in lines:
         machine_instruction += format(int(d[1][1:], 10), "05b") #rs2
         machine_instruction += format(int(d[3][1:], 10), "05b") #rs1
         machine_instruction += "000" #func3
-        s+=imm[:5][::-1] #s-type
+        machine_instruction +=imm[:5][::-1] #s-type
         machine_instruction += "0100011" #opcode
     elif d[0].lower() == "sh":
         imm = format(int(d[2], 10), "012b") #imm
@@ -149,7 +151,7 @@ for line in lines:
         machine_instruction += format(int(d[1][1:], 10), "05b") #rs2
         machine_instruction += format(int(d[3][1:], 10), "05b") #rs1
         machine_instruction += "010" #func3
-        s+=imm[:5][::-1] #s-type
+        machine_instruction +=imm[:5][::-1] #s-type
         machine_instruction += "0100011" #opcode
     elif d[0].lower() == "addi":
         imm = format(int(d[3], 10), "012b") #imm
