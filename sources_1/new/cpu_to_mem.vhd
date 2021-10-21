@@ -112,7 +112,7 @@ begin
     pc_rom : blk_mem_gen_pgm_mem
     PORT MAP (
         clka => clk,
-        addra => cpu_pc(11 downto 0),
+        addra => cpu_pc(13 downto 2),
         douta => cpu_inst
     );
     
