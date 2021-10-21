@@ -25,7 +25,8 @@ entity pc_ctl is
            g : in STD_LOGIC;
            l : in STD_LOGIC;
            jal_or_jalr : in STD_LOGIC;
-           q : out STD_LOGIC_VECTOR (n-1 downto 0)
+           q : out STD_LOGIC_VECTOR (n-1 downto 0);
+           new_pc : out STD_LOGIC_VECTOR (n-1 downto 0)
         );
 end pc_ctl;
 
@@ -58,6 +59,7 @@ architecture RTL of pc_ctl is
     end component;
 
     signal q_adder : STD_LOGIC_VECTOR (n-1 downto 0);
+    signal prev_pc : STD_LOGIC_VECTOR (n-1 downto 0);
 
 begin
 
@@ -86,7 +88,14 @@ begin
     );
 
     update_pc <= (NOT stall_pipeline) AND n_rst;
-
+    
+    gen_new_pc:
+    for i in 0 to n-1 generate
+        new_pc(i) <= (update_pc AND q_adder(i)) OR (prev_pc(i) AND (NOT update_pc));
+    end generate;
+    
+    q <= prev_pc;
+    
     pc_reg: reg_n_bit
     Generic Map (n => n)
     Port Map(
@@ -94,7 +103,7 @@ begin
         en => update_pc,
         n_rst => n_rst,
         clk => clk,
-        q => q
+        q => prev_pc
     );
 
 end RTL;

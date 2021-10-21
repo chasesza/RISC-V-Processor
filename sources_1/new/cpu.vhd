@@ -53,7 +53,6 @@ architecture RTL of cpu is
                f_or : out STD_LOGIC;
                fxor : out STD_LOGIC;
                rd : out STD_LOGIC_VECTOR(4 downto 0);
-               load_dest : out STD_LOGIC_VECTOR(4 downto 0);
                store_inst: out STD_LOGIC;
                load_inst: out STD_LOGIC;
                jal_or_jalr : out STD_LOGIC
@@ -83,7 +82,6 @@ architecture RTL of cpu is
     signal decoder_f_or : STD_LOGIC;
     signal decoder_fxor : STD_LOGIC;
     signal decoder_rd : STD_LOGIC_VECTOR(4 downto 0);
-    signal decoder_load_dest : STD_LOGIC_VECTOR(4 downto 0);
     signal decoder_jal_or_jalr : STD_LOGIC;
 
 
@@ -159,7 +157,8 @@ architecture RTL of cpu is
                g : in STD_LOGIC;
                l : in STD_LOGIC;
                jal_or_jalr : in STD_LOGIC;
-               q : out STD_LOGIC_VECTOR (n-1 downto 0)
+               q : out STD_LOGIC_VECTOR (n-1 downto 0);
+               new_pc : out STD_LOGIC_VECTOR (n-1 downto 0)
             );
     end component;
 
@@ -170,7 +169,6 @@ begin
     stall <= load_inst AND (NOT resume);
     load <= load_inst;
 
-    pc <= pc_ctl_q;
     d <= cpu_reg_q2;
     address <= alu_q;
 
@@ -199,7 +197,6 @@ begin
             f_or => decoder_f_or,
             fxor => decoder_fxor,
             rd => decoder_rd,
-            load_dest => decoder_load_dest,
             store_inst => store,
             load_inst => load_inst,
             jal_or_jalr => decoder_jal_or_jalr
@@ -264,7 +261,8 @@ begin
                 g => alu_g,
                 l => alu_l,
                 jal_or_jalr => decoder_jal_or_jalr,
-                q => pc_ctl_q
+                q => pc_ctl_q,
+                new_pc => pc
             );
 
 end RTL;
