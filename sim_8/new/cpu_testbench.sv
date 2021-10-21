@@ -13,7 +13,6 @@ module cpu_testbench();
     wire store;
     wire load;
     
-    
     cpu #(32, 5) cpu_tst(
         .clk(clk),
        .n_rst(n_rst),
@@ -25,6 +24,7 @@ module cpu_testbench();
        .store(store),
        .load(load)
     );
+    
     
     initial 
     begin
@@ -40,28 +40,9 @@ module cpu_testbench();
          #2;
         n_rst = 1'b1;
         
-        
-        //lui x31, 0xF
-         #2;
-         inst = 32'b00000000000000001111111110110111;
-        
-        //addi x30, x31, 0x7FF
-         #2; 
-         inst = 32'b01111111111111111000111100010011;
-         
-         //add x29, x30, x31
-         #2
-         inst = 32'b00000001111111110000111010110011;
-         
-         //sw x31, x30, 0xABFF
-         #2;
-         inst = 32'b00000001111011111010000010100011;
-         
-         #2;
-         inst = 32'b00000001000000000000000011101111;
-        
     end
     
     always #1 clk = ~ clk;
+    
     
 endmodule
