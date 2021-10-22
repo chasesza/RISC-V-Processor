@@ -15,8 +15,8 @@ entity cpu_to_mem is
             shift_n : integer := 5;
             mem_bits : integer := 15);
     Port ( 
-        clk : in STD_LOGIC;
-        n_rst : in STD_LOGIC;
+        CLK100MHZ : in STD_LOGIC;
+        --n_rst : in STD_LOGIC;
         sw : in STD_LOGIC_VECTOR(3 downto 0);
         btn : in STD_LOGIC_VECTOR(3 downto 0);
         led : out STD_LOGIC_VECTOR(3 downto 0)
@@ -24,6 +24,16 @@ entity cpu_to_mem is
 end cpu_to_mem;
 
 architecture RTL of cpu_to_mem is
+   
+   signal clk : STD_LOGIC;
+   
+   component clk_wiz_0
+       port
+        (
+         clk_out1          : out    std_logic;
+         clk_in1           : in     std_logic
+        );
+    end component;
    
     component cpu is
         Generic(n: integer := 32;
@@ -107,7 +117,19 @@ architecture RTL of cpu_to_mem is
       );
     END COMPONENT;
 
+    signal n_rst : STD_LOGIC;
+
 begin
+
+    n_rst <= NOT (sw(3) AND sw(2) AND sw(1) AND sw(0) AND btn(3) AND btn(2) AND btn(1) AND btn(0));
+
+    clk_div: clk_wiz_0
+    port map ( 
+      -- Clock out ports  
+       clk_out1 => clk,
+       -- Clock in ports
+       clk_in1 => CLK100MHZ
+    );
 
     pc_rom : blk_mem_gen_pgm_mem
     PORT MAP (
