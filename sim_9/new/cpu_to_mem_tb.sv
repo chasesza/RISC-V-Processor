@@ -14,8 +14,8 @@ module cpu_to_mem_tb();
     wire [31:0] douta; 
     
     cpu_to_mem #(32,5,15) cpu_to_mem_test(
-        .clk(clk),
-        .n_rst(n_rst),
+        .CLK100MHZ(clk),
+        //.n_rst(n_rst),
         .sw(sw),
         .btn(btn),
         .led(led)
@@ -31,28 +31,31 @@ module cpu_to_mem_tb();
     begin
         clk = 1'b0;
         clka = 1'b0;
-        n_rst = 1'b1;
+        //n_rst = 1'b1;
         btn = 4'b0;
         sw = 4'b0;
         addra = 12'b0;
                 
-         #2;
-        n_rst = 1'b0;
+         #10;
+        sw = 4'b1111;
+        btn = 4'b1111;
         
-         #102;
-        n_rst = 1'b1;
+        #510;
+        sw = 4'b0;
+        btn = 4'b0;
+        //n_rst = 1'b1;
         
-        #10;
+        #250;
         btn = 4'b1010;
         sw = 4'b0101;
         
-        #11;
+        #250;
         btn = 4'b1111;
-        sw = 4'b0000;
+        sw = 4'b0010;
         
     end
     
-    always #1 clk = ~ clk;
+    always #2 clk = ~ clk;
     always #1 clka = ~clka;
     always #2 addra = addra + 1;
     
