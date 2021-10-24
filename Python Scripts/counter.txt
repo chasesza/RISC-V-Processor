@@ -1,0 +1,67 @@
+
+		//lui     x2,     8               ;0   
+		#2;
+		inst = 32'b00000000000000001000000100110111;
+
+		//addi    x2,     x2,     1       ;4      builds button/sw register address
+		#2;
+		inst = 32'b00000000000100010000000100010011;
+
+		//lui     x3,     12              ;8    
+		#2;
+		inst = 32'b00000000000000001100000110110111;
+
+		//addi    x3,     x3,     1       ;12     builds led register address
+		#2;
+		inst = 32'b00000000000100011000000110010011;
+
+		//addi    x9,     x10,    0       ;16     store x10 in x9
+		#2;
+		inst = 32'b00000000000001010000010010010011;
+
+		//lw      x10,    x2,     0       ;20     gets data from button/sw, stores in x4
+		#2;
+		inst = 32'b00000000000000010010010100000011;
+
+		//andi    x10,    x10,    3       ;24     bitwise AND that zeros all buttons/switches except button 0 and button 1
+		#2;
+		inst = 32'b00000000001101010111010100010011;
+
+		//xori    x8,     x9,     3       ;28     invert bits 0 and 1 of x9 and store in x8
+		#2;
+		inst = 32'b00000000001101001100010000010011;
+
+		//and     x8,     x8,     x10     ;32     the bits in x8 are only one if they were one this cycle and 0 last cycle (detects rising edge)
+		#2;
+		inst = 32'b00000000101001000111010000110011;
+
+		//beq     x8,     x0, 4294967276  ;36     go back to instruction address 16 if there is no rising edge
+		#2;
+		inst = 32'b11111110000001000000011011100011;
+
+		//srli    x8,     x8,     1       ;40     shift right by one to isolate button 1
+		#2;
+		inst = 32'b00000000000101000101010000010011;
+
+		//beq     x8,     x0,     12      ;44     if button 0 was pressed, go to addition (instruction address 56)
+		#2;
+		inst = 32'b00000000000001000000011001100011;
+
+		//addi    x11,    x11  4294967295 ;48     if button 1 was pressed, subtract 1 from x11
+		#2;
+		inst = 32'b11111111111101011000010110010011;
+
+		//jal     x0,     8               ;52     skip the next instruction
+		#2;
+		inst = 32'b00000000100000000000000001101111;
+
+		//addi    x11,    x11     1       ;56     if button 0 was pressed, add 1 to x11
+		#2;
+		inst = 32'b00000000000101011000010110010011;
+
+		//sw      x11,     x3,     0      ;60     stores data from x11 in the led reg
+		#2;
+		inst = 32'b00000000101100011010000000100011;
+
+		//jal     x0,     4294967248      ;64     jump to instruction 16		#2;
+		inst = 32'b11111101000111111111000001101111;

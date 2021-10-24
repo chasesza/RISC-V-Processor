@@ -121,7 +121,7 @@ architecture RTL of cpu_to_mem is
 
 begin
 
-    n_rst <= NOT (sw(3) AND sw(2) AND sw(1) AND sw(0) AND btn(3) AND btn(2) AND btn(1) AND btn(0));
+    n_rst <= NOT sw(3);
 
     clk_div: clk_wiz_0
     port map ( 

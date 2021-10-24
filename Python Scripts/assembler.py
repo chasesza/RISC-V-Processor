@@ -44,7 +44,7 @@ for line in lines:
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs2
         machine_instruction += format(int(d[1][1:], 10), "05b") #rs1
         machine_instruction += "000" #func3
-        machine_instruction += imm[1:4][::-1] + imm[11] #b-type
+        machine_instruction += imm[1:5][::-1] + imm[11] #b-type
         machine_instruction += "1100011" #opcode
     elif d[0].lower() == "bne":
         imm = format(int(d[3], 10), "013b") #imm
@@ -53,7 +53,7 @@ for line in lines:
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs2
         machine_instruction += format(int(d[1][1:], 10), "05b") #rs1
         machine_instruction += "001" #func3
-        machine_instruction += imm[1:4][::-1] + imm[11] #b-type
+        machine_instruction += imm[1:5][::-1] + imm[11] #b-type
         machine_instruction += "1100011" #opcode
     elif d[0].lower() == "blt":
         imm = format(int(d[3], 10), "013b") #imm
@@ -62,7 +62,7 @@ for line in lines:
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs2
         machine_instruction += format(int(d[1][1:], 10), "05b") #rs1
         machine_instruction += "100" #func3
-        machine_instruction += imm[1:4][::-1] + imm[11] #b-type
+        machine_instruction += imm[1:5][::-1] + imm[11] #b-type
         machine_instruction += "1100011" #opcode
     elif d[0].lower() == "bge":
         imm = format(int(d[3], 10), "013b") #imm
@@ -71,7 +71,7 @@ for line in lines:
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs2
         machine_instruction += format(int(d[1][1:], 10), "05b") #rs1
         machine_instruction += "101" #func3
-        machine_instruction += imm[1:4][::-1] + imm[11] #b-type
+        machine_instruction += imm[1:5][::-1] + imm[11] #b-type
         machine_instruction += "1100011" #opcode
     elif d[0].lower() == "bltu":
         imm = format(int(d[3], 10), "013b") #imm
@@ -80,7 +80,7 @@ for line in lines:
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs2
         machine_instruction += format(int(d[1][1:], 10), "05b") #rs1
         machine_instruction += "110" #func3
-        machine_instruction += imm[1:4][::-1] + imm[11] #b-type
+        machine_instruction += imm[1:5][::-1] + imm[11] #b-type
         machine_instruction += "1100011" #opcode
     elif d[0].lower() == "bgeu":
         imm = format(int(d[3], 10), "013b") #imm
@@ -89,7 +89,7 @@ for line in lines:
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs2
         machine_instruction += format(int(d[1][1:], 10), "05b") #rs1
         machine_instruction += "111" #func3
-        machine_instruction += imm[1:4][::-1] + imm[11] #b-type
+        machine_instruction += imm[1:5][::-1] + imm[11] #b-type
         machine_instruction += "1100011" #opcode
     elif d[0].lower() == "lb":
         imm = format(int(d[3], 10), "012b") #imm
@@ -155,42 +155,48 @@ for line in lines:
         machine_instruction += "0100011" #opcode
     elif d[0].lower() == "addi":
         imm = format(int(d[3], 10), "012b") #imm
-        machine_instruction = imm #i-type
+        imm = str(imm)[::-1] #reverse to make indices match
+        machine_instruction = imm[:12][::-1] #i-type
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs1
         machine_instruction += "000" #func3
         machine_instruction += format(int(d[1][1:], 10), "05b") #rd
         machine_instruction += "0010011" #opcode
     elif d[0].lower() == "slti":
         imm = format(int(d[3], 10), "012b") #imm
-        machine_instruction = imm #i-type
+        imm = str(imm)[::-1] #reverse to make indices match
+        machine_instruction = imm[:12][::-1] #i-type
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs1
         machine_instruction += "010" #func3
         machine_instruction += format(int(d[1][1:], 10), "05b") #rd
         machine_instruction += "0010011" #opcode
     elif d[0].lower() == "sltiu":
         imm = format(int(d[3], 10), "012b") #imm
-        machine_instruction = imm #i-type
+        imm = str(imm)[::-1] #reverse to make indices match
+        machine_instruction = imm[:12][::-1] #i-type
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs1
         machine_instruction += "011" #func3
         machine_instruction += format(int(d[1][1:], 10), "05b") #rd
         machine_instruction += "0010011" #opcode
     elif d[0].lower() == "xori":
         imm = format(int(d[3], 10), "012b") #imm
-        machine_instruction = imm #i-type
+        imm = str(imm)[::-1] #reverse to make indices match
+        machine_instruction = imm[:12][::-1] #i-type
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs1
         machine_instruction += "100" #func3
         machine_instruction += format(int(d[1][1:], 10), "05b") #rd
         machine_instruction += "0010011" #opcode
     elif d[0].lower() == "ori":
         imm = format(int(d[3], 10), "012b") #imm
-        machine_instruction = imm #i-type
+        imm = str(imm)[::-1] #reverse to make indices match
+        machine_instruction = imm[:12][::-1] #i-type
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs1
         machine_instruction += "110" #func3
         machine_instruction += format(int(d[1][1:], 10), "05b") #rd
         machine_instruction += "0010011" #opcode
     elif d[0].lower() == "andi":
         imm = format(int(d[3], 10), "012b") #imm
-        machine_instruction = imm #i-type
+        imm = str(imm)[::-1] #reverse to make indices match
+        machine_instruction = imm[:12][::-1] #i-type
         machine_instruction += format(int(d[2][1:], 10), "05b") #rs1
         machine_instruction += "111" #func3
         machine_instruction += format(int(d[1][1:], 10), "05b") #rd
