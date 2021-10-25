@@ -4,7 +4,7 @@ lui     x3,     12              ;8
 addi    x3,     x3,     1       ;12     builds led register address
 
 addi    x9,     x10,    0       ;16     store x10 in x9
-lw      x10,    x2,     0       ;20     gets data from button/sw, stores in x4
+lw      x10,    x2,     0       ;20     gets data from button/sw, stores in x10
 andi    x10,    x10,    3       ;24     bitwise AND that zeros all buttons/switches except button 0 and button 1
 xori    x8,     x9,     3       ;28     invert bits 0 and 1 of x9 and store in x8
 and     x8,     x8,     x10     ;32     the bits in x8 are only one if they were one this cycle and 0 last cycle (detects rising edge)
